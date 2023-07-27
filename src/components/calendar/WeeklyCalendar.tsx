@@ -13,7 +13,10 @@ import { useState } from "react";
 import styled from "styled-components";
 import Cell from "./Cell";
 import HeadCell from "./HeadCell";
-import Link from "next/link";
+import { Reservation } from "@/types/reservation";
+import { Class } from "@/types/class";
+
+const today = new Date("2023-07-25 10:00:00");
 
 export const skippedHours = [
   { from: 3, to: 4 },
@@ -32,7 +35,7 @@ function hasNoService(date: Date) {
 function blockTime(date: Date) {
   return (
     diffDate({
-      from: addDate({ date: new Date(), duration: { minutes: 24 * 60 + 90 } }),
+      from: addDate({ date: today, duration: { minutes: 24 * 60 + 90 } }),
       to: date,
       unit: "minute",
     }) <= 0 || hasNoService(date)
@@ -45,18 +48,19 @@ function createDateSet(date: Date, packageType: string) {
     : [date, addDate({ date, duration: { minutes: 30 } })];
 }
 
-export default function WeeklyCalendar({
-  packageType,
-}: {
+interface Props {
   packageType: string;
-}) {
+  reservations: Reservation[];
+}
+
+export default function WeeklyCalendar({ packageType, reservations }: Props) {
   const router = useRouter();
   const startDate = useSearchParams().get("startDate") ?? null;
-  const [date, setDate] = useState(new Date()); // TODO weekly calendar navigation
+  const [date, setDate] = useState(today); // TODO weekly calendar navigation
   const init = () =>
     startDate ? createDateSet(new Date(startDate), packageType) : [];
   const [selectedDates, setSelectedDates] = useState<Date[]>(init);
-  const { start, end } = getEdgeOfWeek({ date });
+  const { start, end } = getEdgeOfWeek({ date: today });
   const weekly = eachDateOfInterval({ type: "day", params: { start, end } });
   const changeSelectedDates = (date: Date) => {
     setSelectedDates(
@@ -71,6 +75,14 @@ export default function WeeklyCalendar({
       })}`
     );
   };
+
+  const isReserved = (date: Date) =>
+    reservations
+      .reduce((acc, { classes }) => acc.concat(classes), [] as Class[])
+      .some(
+        ({ startDate }) =>
+          diffDate({ from: startDate, to: date, unit: "minute" }) === 0
+      );
 
   useEffect(() => {
     if (!startDate) {
@@ -128,7 +140,7 @@ export default function WeeklyCalendar({
                           <Circle
                             className="flex items-center justify-center"
                             today={
-                              time.getDate() === new Date().getDate()
+                              time.getDate() === today.getDate()
                                 ? "true"
                                 : undefined
                             }
@@ -146,6 +158,7 @@ export default function WeeklyCalendar({
                         type={packageType}
                         date={time}
                         isBlocked={blockTime}
+                        isReserved={isReserved}
                         hiddenDash={isSkippedHour(time)}
                         onClickCell={changeSelectedDates}
                         selectedDates={selectedDates}

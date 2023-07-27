@@ -63,7 +63,7 @@ export default function Tutors({ packageType }: Props) {
 
   const [selectedTutorId, setSelectedTutorId] = useState<
     string | null | "auto"
-  >(null);
+  >(null); // TODO client 상태로 저장하는게 아닌, API 호출을 통해 서버에 저장하도록 변경
 
   const changeTutorId = (id: string) => {
     setSelectedTutorId(id === selectedTutorId ? null : id);
