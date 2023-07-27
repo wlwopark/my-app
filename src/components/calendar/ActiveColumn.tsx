@@ -30,12 +30,12 @@ export default function ActiveColumn({
     <>
       <CellColumn dashed={dashed} id={colId} ref={ref}>
         <Box
-          autoHover={isAutoHoverActivated}
+          autohover={isAutoHoverActivated ? "true" : undefined}
           text={toFormattedDate({ date, formatPattern: "HH:mm" })}
           onClick={() => onClickColumn(date)}
-          selectedIndex={selectedIndex}
-          selectionCount={selectionCount}
-          isHoverDisabled={isHoverDisabled}
+          selectedindex={selectedIndex}
+          count={selectionCount}
+          disabled={isHoverDisabled ? "true" : undefined}
         />
       </CellColumn>
     </>
@@ -44,10 +44,10 @@ export default function ActiveColumn({
 
 const Box = styled.div<{
   text?: string;
-  selectedIndex: number;
-  selectionCount: number;
-  autoHover: boolean;
-  isHoverDisabled: boolean;
+  selectedindex: number;
+  count: number;
+  autohover?: "true";
+  disabled?: "true";
 }>`
   width: 95%;
   margin: auto;
@@ -56,11 +56,11 @@ const Box = styled.div<{
   font-size: 12px;
   text-align: center;
 
-  ${({ isHoverDisabled, autoHover, text }) =>
-    !isHoverDisabled &&
+  ${({ disabled, autohover, text }) =>
+    !disabled &&
     css`
       &:hover {
-        height: ${autoHover ? "200%" : "100%"};
+        height: ${autohover ? "200%" : "100%"};
         border: 1px solid #e4e7f4;
         background-color: #e5e2f7;
         box-shadow: 0 0.5rem 1.5rem rgba(20, 15, 51, 0.15);
@@ -81,29 +81,29 @@ const Box = styled.div<{
     height: 95%;
   }
 
-  ${({ selectedIndex, selectionCount, autoHover }) =>
-    selectedIndex >= 0
+  ${({ selectedindex, count, autohover }) =>
+    selectedindex >= 0
       ? `color: black; 
     background-color: white;
     box-shadow: 0 0.5rem 1.5rem rgba(20, 15, 51, 0.15);
     border: 1px solid #503cc8;
 
     ${
-      selectedIndex > 0
+      selectedindex > 0
         ? `border-top: none;
         border-radius: 0 0 6px 6px;
         &:hover {
-            border-radius: ${autoHover ? "6px" : "0 0 6px 6px"};
+            border-radius: ${autohover ? "6px" : "0 0 6px 6px"};
         }
         &:before {
             content: "튜터 선택";
         }
         `
-        : selectionCount > 1
+        : count > 1
         ? `border-bottom: none;
         border-radius: 6px 6px 0 0;
         &:hover {
-            border-radius: ${autoHover ? "6px" : "6px 6px 0 0"};
+            border-radius: ${autohover ? "6px" : "6px 6px 0 0"};
         }
         `
         : `border-radius: 6px;  

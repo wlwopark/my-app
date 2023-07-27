@@ -41,7 +41,7 @@ export default function Header({ packageType }: { packageType: string }) {
             <a>
               <Content>
                 <div
-                  className={`mr-[12px] text-[12px] inline-block rounded-[4px] px-[8px] py-[0px] font-medium flex items-center ${
+                  className={`flex items-center mr-[12px] text-[12px] inline-block rounded-[4px] px-[8px] py-[0px] ${
                     packageType === "pck20"
                       ? "bg-blue-50 text-blue-500"
                       : "bg-green-50 text-green-500"
