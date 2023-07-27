@@ -1,4 +1,4 @@
-import { Tutor as TutorType } from "@/hooks/useChangeTutor";
+import { Tutor as TutorType } from "@/types/tutor";
 import styled from "styled-components";
 
 interface Props extends TutorType {

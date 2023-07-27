@@ -1,7 +1,7 @@
 "use client";
 
-import { Tutor as TutorType } from "@/hooks/useChangeTutor";
 import { toFormattedDate } from "@/utils/date";
+import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import styled from "styled-components";
 import Tutor from "./input/Tutor";
@@ -55,11 +55,12 @@ const dummy = [
 ];
 
 interface Props {
-  //   tutors: TutorType[];
-  date: Date;
+  packageType: string;
 }
 
-export default function Tutors({ date }: Props) {
+export default function Tutors({ packageType }: Props) {
+  const startDate = useSearchParams().get("startDate") ?? null;
+
   const [selectedTutorId, setSelectedTutorId] = useState<
     string | null | "auto"
   >(null);
@@ -68,11 +69,22 @@ export default function Tutors({ date }: Props) {
     setSelectedTutorId(id === selectedTutorId ? null : id);
   };
 
+  if (!startDate) {
+    return (
+      <Container className="flex h-full items-center">
+        <GuidText>{`캘린더에서 원하시는 시간을 눌러\n수업을 신청해 주세요.`}</GuidText>
+      </Container>
+    );
+  }
+
   return (
     <>
       <Container className="flex flex-col">
         <Text className="text-h4 px-[8px] py-[20px] text-gray-900">
-          {toFormattedDate({ date, formatPattern: "yyyy-MM-dd HH:mm" })}
+          {toFormattedDate({
+            date: startDate,
+            formatPattern: "yyyy-MM-dd HH:mm",
+          })}
         </Text>
         <Tutor
           isSelected={selectedTutorId === "auto"}

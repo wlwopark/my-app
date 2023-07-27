@@ -1,19 +1,21 @@
 "use client";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import useOpenModal from "@/hooks/useOpenModal";
-import { useState } from "react";
 import { styled } from "styled-components";
 import PackageSelection from "./PackageSelection";
 
-export default function Header() {
-  const [selected, setSelected] = useState<"pck20" | "pck40">("pck20");
+export default function Header({ packageType }: { packageType: string }) {
+  const router = useRouter();
+
   const { isOpen, closeModal, openModal } = useOpenModal(true);
 
-  const changeSelection = (value: "pck20" | "pck40") => {
-    if (value !== selected) {
+  const changeSelection = (value: string) => {
+    if (value !== packageType) {
       closeModal();
     }
-    setSelected(value);
+    router.push(`/schedule/${value}`);
   };
 
   return (
@@ -40,14 +42,14 @@ export default function Header() {
               <Content>
                 <div
                   className={`mr-[12px] text-[12px] inline-block rounded-[4px] px-[8px] py-[0px] font-medium flex items-center ${
-                    selected === "pck20"
+                    packageType === "pck20"
                       ? "bg-blue-50 text-blue-500"
                       : "bg-green-50 text-green-500"
                   }`}
                 >
-                  {selected}
+                  {packageType}
                 </div>
-                <div>{selected}</div>
+                <div>{packageType}</div>
               </Content>
             </a>
           </Input>
@@ -63,7 +65,7 @@ export default function Header() {
       <PackageSelection
         isOpen={isOpen}
         closeModal={closeModal}
-        selected={selected}
+        selected={packageType}
         changeSelection={changeSelection}
       />
     </>

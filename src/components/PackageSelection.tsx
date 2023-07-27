@@ -5,10 +5,10 @@ import PackageOption from "./input/PackageOption";
 import Modal from "./modal/Modal";
 
 interface Props {
-  selected: "pck20" | "pck40";
+  selected: string;
   isOpen: boolean;
   closeModal: () => void;
-  changeSelection: (selected: "pck20" | "pck40") => void;
+  changeSelection: (selected: string) => void;
 }
 
 export default function PackageSelection({

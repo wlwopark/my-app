@@ -1,4 +1,5 @@
 "use client";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import {
   addDate,
@@ -7,11 +8,12 @@ import {
   getEdgeOfWeek,
   toFormattedDate,
 } from "@/utils/date";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import Cell from "./Cell";
 import HeadCell from "./HeadCell";
+import Link from "next/link";
 
 export const skippedHours = [
   { from: 3, to: 4 },
@@ -37,22 +39,44 @@ function blockTime(date: Date) {
   );
 }
 
-interface Props {
-  type: "pck20" | "pck40";
+function createDateSet(date: Date, packageType: string) {
+  return packageType === "pck20"
+    ? [date]
+    : [date, addDate({ date, duration: { minutes: 30 } })];
 }
 
-export default function WeeklyCalendar({ type }: Props) {
-  const [date, setDate] = useState(new Date());
-  const [selectedDates, setSelectedDates] = useState<Date[]>([date]);
+export default function WeeklyCalendar({
+  packageType,
+}: {
+  packageType: string;
+}) {
+  const router = useRouter();
+  const startDate = useSearchParams().get("startDate") ?? null;
+  const [date, setDate] = useState(new Date()); // TODO weekly calendar navigation
+  const init = () =>
+    startDate ? createDateSet(new Date(startDate), packageType) : [];
+  const [selectedDates, setSelectedDates] = useState<Date[]>(init);
   const { start, end } = getEdgeOfWeek({ date });
   const weekly = eachDateOfInterval({ type: "day", params: { start, end } });
   const changeSelectedDates = (date: Date) => {
     setSelectedDates(
-      type === "pck20"
+      packageType === "pck20"
         ? [date]
         : [date, addDate({ date, duration: { minutes: 30 } })]
     );
+    router.push(
+      `/schedule/${packageType}?startDate=${toFormattedDate({
+        date,
+        formatPattern: "yyyy-MM-dd HH:mm",
+      })}`
+    );
   };
+
+  useEffect(() => {
+    if (!startDate) {
+      setSelectedDates(init());
+    }
+  }, []);
 
   return (
     <Table className="flex">
@@ -119,7 +143,7 @@ export default function WeeklyCalendar({ type }: Props) {
                         </Head>
                       )}
                       <Cell
-                        type={type}
+                        type={packageType}
                         date={time}
                         isBlocked={blockTime}
                         hiddenDash={isSkippedHour(time)}

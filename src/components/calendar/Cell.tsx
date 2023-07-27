@@ -11,7 +11,7 @@ interface Props {
   isBlocked: (value: Date) => boolean;
   onClickCell: (date: Date) => void;
   hiddenDash?: boolean;
-  type: "pck20" | "pck40";
+  type: string;
 }
 
 export default function Cell({
